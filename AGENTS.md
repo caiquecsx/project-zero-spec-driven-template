@@ -53,6 +53,25 @@ checklist
 - Append-only changelog at `history/changelog.md`.
 - ADRs in `history/decisions/` are immutable once filed.
 
+## Commit attribution
+
+AI-made commits must be visibly distinct from human commits on
+GitHub. The AI always commits through a wrapper that overrides the
+author and committer identity for the duration of the call:
+
+- **Wrapper:** `pwsh .specify/scripts/ai-commit.ps1 -Message "<msg>"`
+- **Identity:** `opencode <opencode@ai.local>` (override per-call via
+  `AI_COMMIT_NAME` / `AI_COMMIT_EMAIL` env vars)
+
+The wrapper sets `GIT_AUTHOR_*` and `GIT_COMMITTER_*` env vars only
+for that invocation. The local `user.name` / `user.email` are not
+modified, so plain `git commit` calls (human commits) keep the
+project owner's identity.
+
+Never invoke `git commit` directly from an AI session — always go
+through the wrapper. This is a binding rule; violating it muddies
+the commit history on GitHub.
+
 ## How to start work
 
 1. Have an idea? Type `specify: <describe it>` to the manager.
